@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,11 +18,15 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.io.IOException;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     Button btn;
     TextView tv;
     Double longitude, latitude;
+    Geocoder geocoder;
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -31,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
     btn=(Button)findViewById(R.id.button);
     tv=(TextView)findViewById(R.id.location);
+
+    geocoder=new Geocoder(this);
 
     fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
 
@@ -47,7 +55,18 @@ public class MainActivity extends AppCompatActivity {
                                     if (location1 != null) {
                                         latitude = location1.getLatitude();
                                         longitude = location1.getLongitude();
-                                        tv.setText(latitude + "\n" + longitude);
+//                                        tv.setText(latitude + "\n" + longitude);
+
+                                        try {
+                                            List<Address> addressList= geocoder.getFromLocation(latitude, longitude,1);
+                                            Address address=addressList.get(0);
+                                            tv.setText(address.toString());
+
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+
+
                                         Toast.makeText(MainActivity.this, "success", Toast.LENGTH_LONG).show();
                                     } else {
                                         tv.setText("null");
